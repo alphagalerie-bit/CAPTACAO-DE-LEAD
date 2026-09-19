@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conectado — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9A%A1</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0e1326; --panel:#161d38; --panel2:#1e2748; --line:#2c3762;
+  --text:#eef1fa; --dim:#99a3c9; --dim2:#6d78a3;
+  --amber:#ffb454; --amber-ink:#2a1a04;
+  --green:#6fd39b; --red:#ff8b8b; --blue:#7fb4ff; --purple:#c39bff;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Public Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0 0 .4em;line-height:1.2;font-weight:600}
+p{margin:0 0 .8em;color:var(--dim)}
+a{color:var(--blue)}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+.shell{display:flex;min-height:100vh}
+aside{width:200px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);padding:20px 0;display:flex;flex-direction:column}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:1.25rem;padding:0 20px 16px}
+.brand b{color:var(--amber);font-style:normal;font-weight:600}
+nav{display:flex;flex-direction:column;gap:2px;padding:0 10px}
+.navbtn{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;background:none;border:none;color:var(--dim);cursor:pointer;font:inherit;text-align:left;width:100%}
+.navbtn:hover{background:var(--panel2);color:var(--text)}
+.navbtn.on{background:var(--panel2);color:var(--amber);font-weight:600}
+.navbtn .badge{margin-left:auto;font-size:11px;background:var(--amber);color:var(--amber-ink);border-radius:999px;padding:1px 7px;font-weight:700}
+.sidefoot{margin-top:auto;padding:16px 20px 0;font-size:11px;color:var(--dim2);line-height:1.7}
+.livedot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--dim2);margin-right:5px}
+.livedot.on{background:var(--green);box-shadow:0 0 7px var(--green)}
+main{flex:1;min-width:0;padding:26px 30px 70px;overflow-x:hidden}
+@media(max-width:820px){
+  .shell{flex-direction:column}
+  aside{width:100%;border-right:none;border-bottom:1px solid var(--line);padding:14px 0}
+  nav{flex-direction:row;overflow-x:auto;padding:0 12px}
+  .navbtn{white-space:nowrap;padding:8px 12px}
+  .sidefoot{display:none}
+  main{padding:20px 16px 60px}
+}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.topbar h1{font-size:1.5rem}
+.topbar .sub{color:var(--dim);font-size:13px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;border:1px solid transparent;transition:filter .12s}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-a{background:var(--amber);color:var(--amber-ink)}
+.btn-g{background:var(--green);color:#08301c}
+.btn-o{background:transparent;border-color:var(--line);color:var(--text)}
+.btn-o:hover{border-color:var(--amber)}
+.btn-d{background:transparent;border-color:#5c2b34;color:var(--red)}
+.btn-s{padding:6px 11px;font-size:12.5px;border-radius:6px}
+label.f{display:block;font-size:12.5px;color:var(--dim);margin-bottom:5px;font-weight:500}
+input,select,textarea{width:100%;padding:9px 11px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--amber);outline-offset:1px}
+input[type=range]{padding:0;height:4px;-webkit-appearance:none;background:var(--line);border:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);cursor:pointer}
+input[type=checkbox]{width:auto;accent-color:var(--amber)}
+.row{display:grid;gap:14px;margin-bottom:14px}
+.r2{grid-template-columns:1fr 1fr}
+.r3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){.r2,.r3{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.card h3{font-size:1rem;margin-bottom:12px}
+
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.metric .n{font-family:'IBM Plex Mono',monospace;font-size:1.55rem;font-weight:600;line-height:1}
+.metric .l{font-size:12px;color:var(--dim);margin-top:6px}
+.metric.acc .n{color:var(--amber)}
+.metric.ok .n{color:var(--green)}
+.metric.bad .n{color:var(--red)}
+
+.funil{display:flex;flex-direction:column;gap:9px}
+.frow{display:grid;grid-template-columns:110px 1fr 46px;align-items:center;gap:12px;font-size:13px}
+.fbar{height:22px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.fbar i{display:block;height:100%;border-radius:4px}
+.frow .fn{text-align:right;font-family:'IBM Plex Mono',monospace;color:var(--dim)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:600;color:var(--dim);padding:9px 10px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:var(--panel2)}
+.tbl .nm{font-weight:600}
+.tbl .sm{font-size:12px;color:var(--dim)}
+.tbl input{padding:6px 8px;font-size:13px}
+.tbl td.num{text-align:right;font-family:'IBM Plex Mono',monospace}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.score{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px}
+.sdot{width:8px;height:8px;border-radius:50%}
+.s-hi{color:var(--green)} .s-hi .sdot{background:var(--green)}
+.s-md{color:var(--amber)} .s-md .sdot{background:var(--amber)}
+.s-lo{color:var(--dim2)} .s-lo .sdot{background:var(--dim2)}
+
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);margin:2px 3px 2px 0;white-space:nowrap}
+.tag.w{border-color:#5c4a24;color:var(--amber);background:rgba(255,180,84,.08)}
+.tag.g{border-color:#2c5c42;color:var(--green);background:rgba(111,211,155,.08)}
+
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+.p-novo{background:rgba(127,180,255,.14);color:var(--blue)}
+.p-abordado{background:rgba(255,180,84,.14);color:var(--amber)}
+.p-respondeu{background:rgba(195,155,255,.14);color:var(--purple)}
+.p-reuniao{background:rgba(111,211,155,.14);color:var(--green)}
+.p-cliente{background:var(--green);color:#08301c}
+.p-perdido{background:rgba(255,139,139,.12);color:var(--red)}
+
+.kb{display:grid;grid-template-columns:repeat(6,minmax(175px,1fr));gap:12px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch}
+@media(max-width:1100px){.kb{grid-template-columns:repeat(6,210px)}}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px;min-height:170px}
+.colh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12.5px;font-weight:600}
+.colh .c{font-family:'IBM Plex Mono',monospace;color:var(--dim)}
+.lc{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:10px;margin-bottom:8px;cursor:pointer}
+.lc:hover{border-color:var(--amber)}
+.lc .t{font-weight:600;font-size:13px;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lc .m{font-size:11.5px;color:var(--dim);display:flex;justify-content:space-between;gap:6px}
+.empty{color:var(--dim2);font-size:12px;text-align:center;padding:14px 0}
+
+.drawer-wrap{position:fixed;inset:0;z-index:60;display:none}
+.drawer-wrap.on{display:block}
+.ovl{position:absolute;inset:0;background:rgba(6,9,20,.7)}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(470px,100%);background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column}
+.dh{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.db{padding:18px 20px;overflow-y:auto;flex:1}
+.df{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.x{background:none;border:none;color:var(--dim);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;font-size:13px;margin-bottom:16px}
+.kv dt{color:var(--dim)}
+.kv dd{margin:0;word-break:break-word}
+.hist{border-left:2px solid var(--line);padding-left:12px;margin-bottom:14px}
+.hist div{font-size:12.5px;margin-bottom:8px}
+.hist time{color:var(--dim2);font-size:11px;display:block;font-family:'IBM Plex Mono',monospace}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--dim);padding:8px 12px;cursor:pointer;font:inherit;font-size:13px}
+.tab.on{color:var(--amber);border-bottom-color:var(--amber);font-weight:600}
+
+.queue{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.qnum{font-family:'IBM Plex Mono',monospace;color:var(--dim);font-size:12.5px;margin-bottom:10px}
+.qactions{display:flex;gap:8px;flex-wrap:wrap}
+
+.warn{background:rgba(255,180,84,.08);border:1px solid #5c4a24;border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--amber);margin-bottom:16px}
+.warn b{color:var(--amber)}
+.danger{background:rgba(255,139,139,.08);border-color:#5c2b34;color:var(--red)}
+.danger b{color:var(--red)}
+.note{font-size:12px;color:var(--dim2);margin-top:8px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--green);color:#08301c;padding:11px 20px;border-radius:999px;font-weight:600;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.hide{display:none!important}
+.bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.bar input,.bar select{width:auto;min-width:150px}
+
+/* chat de teste */
+.chat{background:var(--bg);border:1px solid var(--line);border-radius:10px;height:380px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px}
+.msg{max-width:78%;padding:9px 13px;border-radius:12px;font-size:13.5px;line-height:1.5;white-space:pre-wrap}
+.msg.eu{align-self:flex-end;background:var(--panel2);border-bottom-right-radius:3px}
+.msg.ia{align-self:flex-start;background:#1f4535;color:#dff5e8;border-bottom-left-radius:3px}
+.msg.sys{align-self:center;font-size:11.5px;color:var(--dim2);background:none;padding:2px}
+
+/* qr */
+.qrbox{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.qrimg{width:220px;height:220px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;flex-shrink:0}
+.qrimg img{width:100%;height:100%;image-rendering:pixelated}
+.qrimg .ph{color:#666;font-size:12px;text-align:center;padding:16px}
+.steps{counter-reset:s;padding-left:0;list-style:none;margin:0}
+.steps li{counter-increment:s;padding-left:30px;position:relative;margin-bottom:9px;font-size:13px;color:var(--dim)}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--panel2);color:var(--amber);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside>
+    <div class="brand">Con<b>ectado</b></div>
+    <nav id="nav">
+      <button class="navbtn on" data-v="dash">Painel</button>
+      <button class="navbtn" data-v="prosp">Prospecção</button>
+      <button class="navbtn" data-v="crm">CRM <span class="badge" id="bd-crm">0</span></button>
+      <button class="navbtn" data-v="fila">Disparo <span class="badge" id="bd-fila">0</span></button>
+      <button class="navbtn" data-v="agente">Agente IA</button>
+      <button class="navbtn" data-v="precos">Preços</button>
+      <button class="navbtn" data-v="tpl">Mensagens</button>
+      <button class="navbtn" data-v="cfg">Ajustes</button>
+    </nav>
+    <div class="sidefoot">
+      <span class="livedot" id="foot-dot"></span><span id="foot-wa">WhatsApp offline</span><br>
+      Enviados hoje <span class="mono" style="color:var(--amber)" id="foot-hoje">0</span><span class="mono" id="foot-lim">/30</span><br>
+      MRR <span class="mono" style="color:var(--green)" id="foot-mrr">R$ 0</span>
+    </div>
+  </aside>
+  <main id="view"></main>
+</div>
+
+<div class="drawer-wrap" id="drawer">
+  <div class="ovl" data-close></div>
+  <div class="drawer" id="drawer-inner"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   PAINEL DE CONTROLE - CONECTADO ADMIN v2
+   ========================================================================== */
+var CONFIG = {
+  // Numero do WhatsApp do Conectado (DDI+DDD+numero, so digitos)
+  meuWhatsApp: "5511972128715",
+
+  meuNome: "Leo",
+  minhaEmpresa: "Conectado",
+  meuLink: "https://conectado.alphagalerie.com",
+
+  // Gateway Node que segura a sessao do WhatsApp, roda o agente de IA
+  // e gera os links de pagamento. Ex: "https://conectado-gateway.up.railway.app"
+  // Vazio = admin funciona sozinho, sem WhatsApp conectado e sem IA real.
+  gateway: "",
+
+  // Token que o admin manda pro gateway (defina o mesmo valor no .env do gateway)
+  gatewayToken: "",
+
+  // Busca de lojas no Google. Vazio = modo demonstracao.
+  endpointProspeccao: "",
+
+  // Mercado Pago - SO a Public Key vai aqui. Ela e publica por design.
+  // O Access Token fica no .env do gateway e NUNCA neste arquivo.
+  mpPublicKey: "APP_USR-4fceeb1b-1005-40ca-8fb9-2066f9baa6ea",
+
+  limiteDiario: 30,
+  intervaloSegundos: 45
+};
+/* ========================================================================== */
+
+var KEY = 'conectado_crm_v2';
+var ETAPAS = [
+  {id:'novo',cor:'#7fb4ff',nome:'Novo'},
+  {id:'abordado',cor:'#ffb454',nome:'Abordado'},
+  {id:'respondeu',cor:'#c39bff',nome:'Respondeu'},
+  {id:'reuniao',cor:'#6fd39b',nome:'Reunião'},
+  {id:'cliente',cor:'#6fd39b',nome:'Cliente'},
+  {id:'perdido',cor:'#ff8b8b',nome:'Perdido'}
+];
+
+/* ---------- tabela de precos padrao (voce edita na aba Precos) ---------- */
+var PRECOS_PADRAO = {
+  servicos: [
+    {id:'ia',    nome:'Atendimento IA no WhatsApp',   setup:297,  mensal:59.90, custo:12.00, ativo:true,
+     desc:'Agente responde 24h, qualifica e agenda. Inclui treino com os dados da loja.'},
+    {id:'site',  nome:'Site institucional (1 página)', setup:697,  mensal:19.90, custo:3.00,  ativo:true,
+     desc:'Página única, responsiva, com formulário e botão de WhatsApp.'},
+    {id:'loja',  nome:'Catálogo / loja virtual',       setup:1197, mensal:29.90, custo:5.00,  ativo:true,
+     desc:'Catálogo com carrinho e checkout por Pix ou cartão.'},
+    {id:'geo',   nome:'Google Meu Negócio (GEO)',      setup:197,  mensal:14.90, custo:2.00,  ativo:true,
+     desc:'Ficha otimizada, fotos, categorias e resposta de avaliações.'},
+    {id:'lp',    nome:'Landing page de campanha',      setup:397,  mensal:9.90,  custo:2.00,  ativo:true,
+     desc:'Página de captação para uma oferta específica, com rastreamento.'},
+    {id:'pag',   nome:'Integração de pagamento',       setup:297,  mensal:9.90,  custo:1.50,  ativo:true,
+     desc:'Pix e cartão via Mercado Pago, link de cobrança automático.'},
+    {id:'traf',  nome:'Gestão de tráfego pago',        setup:0,    mensal:397,   custo:60.00, ativo:true,
+     desc:'Criação e otimização de campanhas. Verba de anúncio à parte.'}
+  ],
+  pacotes: [
+    {id:'p1', nome:'Essencial',  servicos:['ia','geo'],                    desconto:10},
+    {id:'p2', nome:'Presença',   servicos:['ia','site','geo'],             desconto:12},
+    {id:'p3', nome:'Completo',   servicos:['ia','site','geo','pag'],       desconto:15},
+    {id:'p4', nome:'Máximo',     servicos:['ia','loja','geo','pag','lp'],  desconto:18}
+  ],
+  regras: {
+    descontoMaxAgente: 10,
+    parcelasSetup: 3,
+    diasTeste: 7
+  }
+};
+
+/* ---------- treino padrao do agente ---------- */
+var AGENTE_PADRAO = {
+  nome: 'Nina',
+  tom: 'direto e simpático, sem formalidade exagerada',
+  instrucoes:
+'Você é a Nina, atendente do Conectado. Fala por WhatsApp com donos de pequenos negócios no Brasil.\n\n' +
+'O QUE O CONECTADO FAZ\n' +
+'Instala um atendente de IA no WhatsApp do cliente para responder 24h, qualificar quem chega e agendar. Também fazemos site, catálogo, ficha do Google e integração de pagamento.\n\n' +
+'COMO VOCÊ FALA\n' +
+'- Mensagens curtas, de duas a quatro linhas. É WhatsApp, não e-mail.\n' +
+'- Uma pergunta por vez. Nunca dispare três perguntas juntas.\n' +
+'- Português do Brasil, informal mas profissional. Emoji só quando couber, no máximo um.\n' +
+'- Nunca invente número, prazo ou recurso. Se não souber, diga que vai confirmar com o Leo.\n\n' +
+'O QUE DESCOBRIR (nesta ordem, conversando, sem parecer formulário)\n' +
+'1. Que tipo de negócio é e o que vende\n' +
+'2. Quem responde o WhatsApp hoje e em que horário\n' +
+'3. Quantas mensagens chegam por dia, mais ou menos\n' +
+'4. Se já tem site ou ficha no Google\n' +
+'5. O que mais incomoda hoje no atendimento\n\n' +
+'COMO CONDUZIR\n' +
+'- Primeiro entenda a dor, só depois fale de preço.\n' +
+'- Quando perguntarem preço antes da hora, responda a faixa e volte para a pergunta que faltava.\n' +
+'- Use os valores da tabela de preços, sem arredondar nem improvisar.\n' +
+'- O objetivo de toda conversa é marcar uma demonstração de 15 minutos ou mandar o link de pagamento.\n\n' +
+'LIMITES\n' +
+'- Desconto: no máximo o percentual definido na tabela. Acima disso, passe para o Leo.\n' +
+'- Não prometa prazo de entrega sem confirmar.\n' +
+'- Não fale mal de concorrente.\n' +
+'- Se a pessoa pedir para não ser mais contatada, confirme com educação, encerre e marque como opt-out.\n' +
+'- Se a pessoa ficar irritada, parar de responder objeções ou pedir para falar com humano, chame o Leo imediatamente.\n\n' +
+'ABRINDO A CONVERSA (quando o lead responde uma abordagem fria)\n' +
+'Agradeça o retorno, confirme rapidamente o que o Conectado faz em uma frase e faça a primeira pergunta de qualificação.',
+
+  faq: [
+    {p:'Quanto custa?', r:'Depende do que a loja precisa. Só o atendimento de IA no WhatsApp fica em R$297 de instalação e R$59,90 por mês. Se quiser site e ficha do Google junto, entra como pacote e fica mais em conta. Me conta rapidinho o que você vende que eu te digo o valor certo.'},
+    {p:'Tem fidelidade?', r:'Não. Você cancela quando quiser, sem multa. A instalação é paga uma vez e a mensalidade acompanha enquanto estiver usando.'},
+    {p:'A IA vai responder errado pros meus clientes?', r:'Ela é treinada com as informações da sua loja e só fala do que você aprovou. Quando não sabe algo, ela avisa o cliente e chama você. Nada de resposta inventada.'},
+    {p:'Preciso trocar de número?', r:'Não. Ela entra no número que você já usa. Seus clientes não percebem mudança nenhuma.'},
+    {p:'E se eu quiser responder pessoalmente?', r:'Você responde quando quiser, a IA sai da conversa na hora. Ela cobre o que você não consegue cobrir.'},
+    {p:'Em quanto tempo fica pronto?', r:'O atendimento no WhatsApp normalmente entra no ar em até 3 dias úteis depois que você manda as informações da loja.'},
+    {p:'Posso testar antes?', r:'Pode. Faço uma demonstração de 15 minutos pelo próprio WhatsApp e você vê a IA respondendo como se fosse sua loja.'},
+    {p:'É muito caro pra mim.', r:'Entendo. Se hoje você perde uma venda por semana por não responder a tempo, a mensalidade já se paga. Mas se o momento não for esse, sem problema, guarda meu contato pra quando fizer sentido.'}
+  ],
+  escalar: ['falar com humano','falar com o dono','advogado','processo','reclame aqui','cancelar contrato','não quero mais','me tira da lista','para de me mandar']
+};
+
+var TEMPLATES_PADRAO = [
+  {id:'t1',nome:'Abordagem fria — venda perdida',texto:'{saudacao}! Aqui é o {meuNome}, do {minhaEmpresa}.\n\nDei uma olhada na {nome} e reparei que o atendimento de vocês no WhatsApp é todo manual. Na prática isso significa que toda mensagem que chega fora do horário provavelmente vira venda perdida.\n\nEu instalo um atendente de IA que responde seus clientes 24h, direto no WhatsApp que vocês já usam. Sem contratar ninguém.\n\nPosso te mostrar funcionando em 5 minutos?\n\nSe não for do seu interesse, é só me avisar que não te chamo mais.'},
+  {id:'t2',nome:'Abordagem curta (mais resposta)',texto:'{saudacao}, tudo bem? Aqui é o {meuNome}.\n\nVocês respondem o WhatsApp da {nome} fora do horário comercial?\n\nPergunto porque instalo um atendente de IA que faz isso automático, e queria te mostrar rapidinho. Posso?'},
+  {id:'t3',nome:'Abordagem — loja sem site',texto:'{saudacao}! {meuNome} aqui, do {minhaEmpresa}.\n\nProcurei a {nome} no Google e vi que vocês ainda não têm site nem atendimento automático — quem procura {categoria} na região acaba caindo no concorrente.\n\nEu resolvo os dois pelo WhatsApp mesmo, sem sistema novo pra aprender. Quer que eu te mostre como fica?\n\nSe não tiver interesse, me avisa que eu paro por aqui.'},
+  {id:'t4',nome:'Follow-up 1 (2 dias depois)',texto:'Oi! Passando só pra saber se você chegou a ver minha mensagem sobre o atendimento automático da {nome}.\n\nSe quiser, eu faço um teste grátis no seu número e você vê respondendo antes de decidir qualquer coisa.'},
+  {id:'t5',nome:'Follow-up 2 — última tentativa',texto:'Oi, última vez que te chamo pra não virar chateação.\n\nSe em algum momento fizer sentido automatizar o WhatsApp da {nome}, é só me chamar aqui. Deixo meu contato salvo: {meuLink}\n\nSucesso com a loja!'},
+  {id:'t6',nome:'Agendar demonstração',texto:'Perfeito! A demonstração é rápida, uns 15 minutos, e faço tudo por aqui mesmo no WhatsApp.\n\nQual horário fica melhor pra você: hoje à tarde ou amanhã de manhã?'},
+  {id:'t7',nome:'Cobrança — link de pagamento',texto:'Oi! Segue o link pra ativar o {pacote} da {nome}:\n\n{linkPagamento}\n\nAssim que o pagamento cair eu já começo a configuração. Qualquer dúvida é só chamar.'}
+];
+
+var S = {};
+var VIEW='dash', FILA={itens:[],i:0,tplId:'t1'}, leadAberto=null, abaDrawer='dados';
+var CHAT=[]; var WA={conectado:false, numero:''};
+
+/* ---------- persistencia ---------- */
+function carregar(){
+  try{ var raw=localStorage.getItem(KEY); if(raw) S=JSON.parse(raw); }catch(e){ console.warn(e); }
+  if(!S.leads) S.leads=[];
+  if(!S.templates||!S.templates.length) S.templates=JSON.parse(JSON.stringify(TEMPLATES_PADRAO));
+  if(!S.log) S.log=[];
+  if(!S.hoje) S.hoje={data:'',n:0};
+  if(!S.precos) S.precos=JSON.parse(JSON.stringify(PRECOS_PADRAO));
+  if(!S.agente) S.agente=JSON.parse(JSON.stringify(AGENTE_PADRAO));
+  if(S.hoje.data!==hojeStr()) S.hoje={data:hojeStr(),n:0};
+}
+function salvar(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ console.warn(e); } }
+function hojeStr(){ return new Date().toISOString().slice(0,10); }
+
+/* ---------- utils ---------- */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function uid(){return 'l'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('on');},2400);}
+function saudacao(){var h=new Date().getHours();return h<12?'Bom dia':(h<18?'Boa tarde':'Boa noite');}
+function normTel(t){var d=String(t||'').replace(/\D/g,'');if(!d)return'';if(d.indexOf('55')===0&&d.length>=12)return d;if(d.length===10||d.length===11)return '55'+d;return d;}
+function telBonito(t){var d=normTel(t);if(d.length<12)return t||'—';var dd=d.slice(2,4),r=d.slice(4);return '('+dd+') '+r.slice(0,r.length-4)+'-'+r.slice(-4);}
+function dataBR(i){if(!i)return'—';var d=new Date(i);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+function diasDesde(i){return i?Math.floor((Date.now()-new Date(i).getTime())/86400000):null;}
+function brl(v){return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function num(v){var n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));return isNaN(n)?0:n;}
+
+/* ---------- score ---------- */
+function calcularScore(l){
+  var s=20,sin=[];
+  if(!l.site){s+=25;sin.push('Sem site');} else if(l.semChat){s+=18;sin.push('Site sem chat/bot');}
+  if(l.temWhatsapp===false){s+=10;sin.push('WhatsApp não confirmado');}
+  if(l.reviews!=null&&l.reviews<30){s+=12;sin.push('Pouca presença online');}
+  if(l.rating!=null&&l.rating<4.2){s+=12;sin.push('Nota baixa');}
+  if(l.respondeReviews===false){s+=10;sin.push('Não responde avaliações');}
+  if(l.horarioLimitado){s+=8;sin.push('Horário curto');}
+  if(!l.telefone){s-=30;sin.push('Sem telefone');}
+  l.sinais=sin; l.score=Math.max(0,Math.min(100,s)); return l.score;
+}
+function classeScore(n){return n>=65?'s-hi':(n>=40?'s-md':'s-lo');}
+
+/* ---------- precos ---------- */
+function servico(id){ return S.precos.servicos.find(function(s){return s.id===id;}); }
+function melhorPacote(ids){
+  var melhor=null;
+  S.precos.pacotes.forEach(function(p){
+    var cobre=p.servicos.every(function(x){ return ids.indexOf(x)>-1; });
+    if(cobre && (!melhor||p.desconto>melhor.desconto)) melhor=p;
+  });
+  return melhor;
+}
+function calcularContrato(ids){
+  var setup=0, mensal=0, custo=0;
+  ids.forEach(function(id){ var s=servico(id); if(s){ setup+=num(s.setup); mensal+=num(s.mensal); custo+=num(s.custo); } });
+  var p=melhorPacote(ids);
+  var desc=p?p.desconto:0;
+  return {
+    servicos:ids,
+    pacote:p?p.nome:'Avulso',
+    desconto:desc,
+    setupCheio:setup, mensalCheio:mensal,
+    setup:setup*(1-desc/100), mensal:mensal*(1-desc/100),
+    custo:custo,
+    margem: mensal*(1-desc/100)-custo
+  };
+}
+function mrrTotal(){
+  return S.leads.filter(function(l){return l.status==='cliente'&&l.contrato;})
+    .reduce(function(a,l){return a+num(l.contrato.mensal);},0);
+}
+
+/* ---------- mensagens ---------- */
+function montarMensagem(txt,l){
+  var bairro='';
+  if(l.endereco){var p=l.endereco.split(',');bairro=(p.length>1?p[1]:p[0]).trim();}
+  return String(txt)
+    .replace(/\{saudacao\}/g,saudacao())
+    .replace(/\{nome\}/g,l.nome||'sua loja')
+    .replace(/\{categoria\}/g,(l.categoria||'esse serviço').toLowerCase())
+    .replace(/\{bairro\}/g,bairro||'sua região')
+    .replace(/\{meuNome\}/g,CONFIG.meuNome)
+    .replace(/\{minhaEmpresa\}/g,CONFIG.minhaEmpresa)
+    .replace(/\{meuLink\}/g,CONFIG.meuLink)
+    .replace(/\{pacote\}/g,(l.contrato&&l.contrato.pacote)||'plano')
+    .replace(/\{linkPagamento\}/g,(l.contrato&&l.contrato.linkPagamento)||'(gere o link na ficha do lead)');
+}
+function abrirWhats(tel,msg){
+  var n=normTel(tel);
+  if(!n){toast('Esse lead não tem telefone válido');return false;}
+  window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msg),'_blank');
+  return true;
+}
+function registrar(id,txt){
+  var l=S.leads.find(function(x){return x.id===id;}); if(!l)return;
+  if(!l.historico) l.historico=[];
+  l.historico.unshift({em:new Date().toISOString(),texto:txt});
+  S.log.unshift({em:new Date().toISOString(),lead:l.nome,texto:txt});
+  if(S.log.length>300) S.log.length=300;
+}
+
+/* ---------- gateway ---------- */
+async function api(rota,body){
+  if(!CONFIG.gateway) throw new Error('Gateway não configurado. Preencha o campo gateway no bloco CONFIG.');
+  var r=await fetch(CONFIG.gateway.replace(/\/$/,'')+rota,{
+    method: body?'POST':'GET',
+    headers:{'Content-Type':'application/json','x-conectado-token':CONFIG.gatewayToken||''},
+    body: body?JSON.stringify(body):undefined
+  });
+  var d=await r.json().catch(function(){return {};});
+  if(!r.ok) throw new Error(d.erro||('HTTP '+r.status));
+  return d;
+}
+async function checarWhats(){
+  if(!CONFIG.gateway) return;
+  try{
+    var d=await api('/status');
+    WA.conectado=!!d.conectado; WA.numero=d.numero||'';
+    atualizarRodape();
+    if(VIEW==='cfg') render();
+  }catch(e){ WA.conectado=false; atualizarRodape(); }
+}
+function atualizarRodape(){
+  var dot=document.getElementById('foot-dot');
+  dot.classList.toggle('on',WA.conectado);
+  document.getElementById('foot-wa').textContent = WA.conectado
+    ? ('WhatsApp '+(WA.numero?telBonito(WA.numero):'conectado'))
+    : (CONFIG.gateway?'WhatsApp offline':'Gateway não configurado');
+  document.getElementById('foot-mrr').textContent=brl(mrrTotal());
+}
+
+/* ==========================================================================
+   RENDER
+   ========================================================================== */
+function render(){
+  document.querySelectorAll('.navbtn').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===VIEW);});
+  document.getElementById('bd-crm').textContent=S.leads.length;
+  document.getElementById('bd-fila').textContent=S.leads.filter(function(l){return l.status==='novo'&&l.telefone;}).length;
+  document.getElementById('foot-hoje').textContent=S.hoje.n;
+  document.getElementById('foot-lim').textContent='/'+CONFIG.limiteDiario;
+  atualizarRodape();
+  var v=document.getElementById('view');
+  var fn={dash:viewDash,prosp:viewProsp,crm:viewCRM,fila:viewFila,agente:viewAgente,precos:viewPrecos,tpl:viewTpl,cfg:viewCfg}[VIEW];
+  v.innerHTML=fn();
+  if(VIEW==='agente') pintarChat();
+  v.scrollTop=0;
+}
+
+/* ---------- painel ---------- */
+function viewDash(){
+  var t=S.leads.length, por={};
+  ETAPAS.forEach(function(e){por[e.id]=S.leads.filter(function(l){return l.status===e.id;}).length;});
+  var abordados=t-por.novo;
+  var respostas=por.respondeu+por.reuniao+por.cliente;
+  var taxa=abordados?Math.round(respostas/abordados*100):0;
+
+  var clientes=S.leads.filter(function(l){return l.status==='cliente'&&l.contrato;});
+  var mrr=mrrTotal();
+  var custoMensal=clientes.reduce(function(a,l){return a+num(l.contrato.custo);},0);
+  var setupMes=clientes.filter(function(l){
+    return l.contrato.inicio && l.contrato.inicio.slice(0,7)===hojeStr().slice(0,7);
+  }).reduce(function(a,l){return a+num(l.contrato.setup);},0);
+  var inadimplentes=clientes.filter(function(l){return l.contrato.statusPagamento==='atrasado';});
+
+  var max=Math.max(1,t);
+  var funil=ETAPAS.filter(function(e){return e.id!=='perdido';}).map(function(e){
+    var n=por[e.id],w=Math.max(2,Math.round(n/max*100));
+    return '<div class="frow"><span>'+e.nome+'</span><div class="fbar"><i style="width:'+w+'%;background:'+e.cor+'"></i></div><span class="fn">'+n+'</span></div>';
+  }).join('');
+
+  var assinaturas=clientes.length?clientes.sort(function(a,b){return num(b.contrato.mensal)-num(a.contrato.mensal);}).map(function(l){
+    var st=l.contrato.statusPagamento||'pendente';
+    var cor=st==='pago'?'g':(st==='atrasado'?'':'w');
+    return '<tr data-abrir="'+l.id+'" style="cursor:pointer"><td class="nm">'+esc(l.nome)+'</td>'+
+      '<td class="sm">'+esc(l.contrato.pacote)+'</td>'+
+      '<td class="num">'+brl(l.contrato.mensal)+'</td>'+
+      '<td class="sm">dia '+(l.contrato.diaVencimento||'—')+'</td>'+
+      '<td><span class="tag '+cor+'" style="'+(st==='atrasado'?'border-color:#5c2b34;color:var(--red)':'')+'">'+st+'</span></td></tr>';
+  }).join('') : '';
+  if(!clientes.length) assinaturas='<tr><td colspan="5" class="empty">Nenhuma assinatura ativa ainda.</td></tr>';
+
+  var quentes=S.leads.filter(function(l){return l.status==='novo'&&l.telefone;}).sort(function(a,b){return (b.score||0)-(a.score||0);}).slice(0,5);
+  var qh=quentes.length?quentes.map(function(l){
+    return '<tr data-abrir="'+l.id+'" style="cursor:pointer"><td class="nm">'+esc(l.nome)+'</td><td class="sm">'+esc(l.categoria||'—')+'</td>'+
+      '<td><span class="score '+classeScore(l.score)+'"><span class="sdot"></span>'+l.score+'</span></td></tr>';
+  }).join(''):'<tr><td colspan="3" class="empty">Nenhum lead novo. Vá em Prospecção.</td></tr>';
+
+  var atrasados=S.leads.filter(function(l){return l.status==='abordado'&&diasDesde(l.ultimoContato)>=2;}).length;
+  var logHtml=S.log.slice(0,7).map(function(x){return '<div><time>'+dataBR(x.em)+'</time>'+esc(x.lead)+' — '+esc(x.texto)+'</div>';}).join('')||'<div class="empty">Sem atividade ainda.</div>';
+
+  return '<div class="topbar"><div><h1>Painel</h1><div class="sub">'+saudacao()+', '+esc(CONFIG.meuNome)+'. '+
+    (atrasados?'<b style="color:var(--amber)">'+atrasados+' lead(s) esperando follow-up.</b>':'Nenhum follow-up atrasado.')+'</div></div>'+
+    '<button class="btn btn-a" data-go="prosp">Buscar novas lojas</button></div>'+
+
+    '<div class="metrics">'+
+      '<div class="metric ok"><div class="n">'+brl(mrr)+'</div><div class="l">Receita recorrente (MRR)</div></div>'+
+      '<div class="metric acc"><div class="n">'+brl(setupMes)+'</div><div class="l">Setup faturado no mês</div></div>'+
+      '<div class="metric"><div class="n">'+clientes.length+'</div><div class="l">Assinaturas ativas</div></div>'+
+      '<div class="metric"><div class="n">'+taxa+'%</div><div class="l">Taxa de resposta</div></div>'+
+      '<div class="metric'+(inadimplentes.length?' bad':'')+'"><div class="n">'+inadimplentes.length+'</div><div class="l">Pagamentos atrasados</div></div>'+
+    '</div>'+
+
+    '<div class="row r2">'+
+      '<div class="card"><h3>Assinaturas ativas</h3><div class="scroll"><table class="tbl">'+
+      '<thead><tr><th>Cliente</th><th>Pacote</th><th style="text-align:right">Mensal</th><th>Vence</th><th>Status</th></tr></thead>'+
+      '<tbody>'+assinaturas+'</tbody></table></div>'+
+      '<p class="note">Margem estimada: '+brl(mrr-custoMensal)+' por mês, já descontando '+brl(custoMensal)+' de custo de infra e token.</p></div>'+
+
+      '<div class="card"><h3>Funil</h3><div class="funil">'+funil+'</div>'+
+      '<h3 style="margin-top:20px">Melhores oportunidades</h3><div class="scroll"><table class="tbl">'+
+      '<tbody>'+qh+'</tbody></table></div></div>'+
+    '</div>'+
+
+    '<div class="card"><h3>Atividade recente</h3><div class="hist">'+logHtml+'</div></div>';
+}
+
+/* ---------- prospeccao ---------- */
+function viewProsp(){
+  var demo=!CONFIG.endpointProspeccao;
+  return '<div class="topbar"><div><h1>Prospecção</h1><div class="sub">Busca lojas por nicho e raio, e pontua quem mais precisa de atendimento automático.</div></div></div>'+
+    (demo?'<div class="warn"><b>Modo demonstração.</b> O campo <span class="mono">endpointProspeccao</span> está vazio, então a busca gera lojas fictícias pra você testar o fluxo. Publique a função <span class="mono">prospectar.js</span> e preencha o endpoint pra buscar lojas reais no Google.</div>':'')+
+    '<div class="card">'+
+      '<div class="row r3">'+
+        '<div><label class="f">Nicho / tipo de loja</label><input id="p-nicho" value="pet shop" placeholder="ex: ótica, barbearia"></div>'+
+        '<div><label class="f">Cidade, bairro ou endereço</label><input id="p-local" value="Imirim, São Paulo"></div>'+
+        '<div><label class="f">Máximo de resultados</label><select id="p-max"><option>20</option><option>40</option><option>60</option></select></div>'+
+      '</div>'+
+      '<div class="row r2">'+
+        '<div><label class="f">Raio: <span class="mono" id="p-raio-v" style="color:var(--amber)">5 km</span></label><input type="range" id="p-raio" min="1" max="50" value="5"></div>'+
+        '<div><label class="f">Filtros</label><div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;padding-top:7px">'+
+          '<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="p-f1" checked> Só com telefone</label>'+
+          '<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="p-f2"> Só sem site</label>'+
+          '<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="p-f3" checked> Ignorar já no CRM</label>'+
+        '</div></div>'+
+      '</div>'+
+      '<button class="btn btn-a" id="p-buscar">Buscar lojas</button>'+
+    '</div><div id="p-resultados"></div>';
+}
+function gerarDemo(nicho,local,n){
+  var pre=['Central','Ponto','Casa','Espaço','Mundo','Top','Mega','Vila','Nova','Studio','Reduto','Cantinho'];
+  var suf=['do Bairro','Express','Prime','& Cia','Popular','da Esquina','Norte','Life','Center','Log'];
+  var ruas=['Av. Imirim','R. Parapuã','Av. Água Fria','R. Alfredo Pujol','Av. Braz Leme','R. Voluntários da Pátria'];
+  var out=[];
+  for(var i=0;i<n;i++){
+    var tem=Math.random()>0.42;
+    var l={id:uid(),nome:pre[i%pre.length]+' '+(nicho.charAt(0).toUpperCase()+nicho.slice(1))+' '+suf[(i*3)%suf.length],
+      categoria:nicho,endereco:ruas[i%ruas.length]+', '+(100+i*37)+' - '+local,
+      telefone:'5511'+(900000000+i).toString().slice(0,9),
+      site:tem?'https://exemplo-loja-'+(i+1)+'.com.br':'',semChat:tem?Math.random()>0.25:false,
+      rating:Math.round((3.4+Math.random()*1.6)*10)/10,reviews:Math.floor(Math.random()*180),
+      respondeReviews:Math.random()>0.65,horarioLimitado:Math.random()>0.55,temWhatsapp:Math.random()>0.2,
+      status:'novo',origem:'Demonstração',criadoEm:new Date().toISOString(),historico:[]};
+    calcularScore(l); out.push(l);
+  }
+  return out;
+}
+async function buscarLojas(){
+  var nicho=document.getElementById('p-nicho').value.trim()||'loja';
+  var local=document.getElementById('p-local').value.trim()||'São Paulo';
+  var raio=parseInt(document.getElementById('p-raio').value,10);
+  var max=parseInt(document.getElementById('p-max').value,10);
+  var soTel=document.getElementById('p-f1').checked, soSemSite=document.getElementById('p-f2').checked, ign=document.getElementById('p-f3').checked;
+  var box=document.getElementById('p-resultados');
+  box.innerHTML='<div class="card"><div class="empty">Buscando lojas...</div></div>';
+  var achados=[];
+  if(CONFIG.endpointProspeccao){
+    try{
+      var r=await fetch(CONFIG.endpointProspeccao,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nicho:nicho,local:local,raioKm:raio,max:max})});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var d=await r.json();
+      achados=(d.lojas||[]).map(function(p){var l=Object.assign({id:uid(),status:'novo',origem:'Google Places',criadoEm:new Date().toISOString(),historico:[]},p);calcularScore(l);return l;});
+    }catch(e){
+      box.innerHTML='<div class="card"><h3 style="color:var(--red)">A busca não funcionou</h3><p>'+esc(e.message)+'</p><p class="note">Confira se a função está publicada e se a chave do Google está no painel do Netlify.</p></div>';
+      return;
+    }
+  } else { await new Promise(function(r){setTimeout(r,500);}); achados=gerarDemo(nicho,local,max); }
+  if(soTel) achados=achados.filter(function(l){return !!l.telefone;});
+  if(soSemSite) achados=achados.filter(function(l){return !l.site;});
+  if(ign){var tels=S.leads.map(function(l){return normTel(l.telefone);});achados=achados.filter(function(l){return tels.indexOf(normTel(l.telefone))===-1;});}
+  achados.sort(function(a,b){return b.score-a.score;});
+  window._achados=achados;
+  if(!achados.length){box.innerHTML='<div class="card"><div class="empty">Nenhuma loja com esses filtros. Aumente o raio ou troque o nicho.</div></div>';return;}
+  var linhas=achados.map(function(l,i){
+    return '<tr><td><input type="checkbox" class="sel" data-i="'+i+'" checked></td>'+
+      '<td><div class="nm">'+esc(l.nome)+'</div><div class="sm">'+esc(l.endereco||'')+'</div></td>'+
+      '<td><span class="score '+classeScore(l.score)+'"><span class="sdot"></span>'+l.score+'</span></td>'+
+      '<td>'+(l.sinais||[]).map(function(s){return '<span class="tag w">'+esc(s)+'</span>';}).join('')+'</td>'+
+      '<td class="mono sm">'+esc(telBonito(l.telefone))+'</td>'+
+      '<td class="sm">'+(l.rating?l.rating+' ('+(l.reviews||0)+')':'—')+'</td></tr>';
+  }).join('');
+  box.innerHTML='<div class="card"><div class="bar"><h3 style="margin:0;flex:1">'+achados.length+' lojas encontradas</h3>'+
+    '<button class="btn btn-o btn-s" id="sel-todas">Marcar/desmarcar todas</button>'+
+    '<button class="btn btn-a" id="add-crm">Adicionar ao CRM</button></div>'+
+    '<div class="scroll"><table class="tbl"><thead><tr><th></th><th>Loja</th><th>Score</th><th>Por que é oportunidade</th><th>Telefone</th><th>Google</th></tr></thead><tbody>'+linhas+'</tbody></table></div></div>';
+}
+
+/* ---------- crm ---------- */
+function viewCRM(){
+  var busca=(window._busca||'').toLowerCase();
+  var cols=ETAPAS.map(function(e){
+    var leads=S.leads.filter(function(l){
+      if(l.status!==e.id) return false;
+      if(!busca) return true;
+      return (l.nome+' '+(l.categoria||'')+' '+(l.endereco||'')).toLowerCase().indexOf(busca)>-1;
+    }).sort(function(a,b){return (b.score||0)-(a.score||0);});
+    var cards=leads.map(function(l){
+      var d=diasDesde(l.ultimoContato);
+      var al=(l.status==='abordado'&&d!==null&&d>=2)?' <span style="color:var(--amber)">•</span>':'';
+      var dir=l.contrato?'<span class="score s-hi"><span class="sdot"></span>'+brl(l.contrato.mensal)+'</span>'
+              :'<span class="score '+classeScore(l.score)+'"><span class="sdot"></span>'+(l.score||0)+'</span>';
+      return '<div class="lc" data-abrir="'+l.id+'"><div class="t">'+esc(l.nome)+al+'</div>'+
+        '<div class="m"><span>'+esc((l.categoria||'').slice(0,14))+'</span>'+dir+'</div></div>';
+    }).join('')||'<div class="empty">vazio</div>';
+    return '<div class="col"><div class="colh"><span style="color:'+e.cor+'">'+e.nome+'</span><span class="c">'+leads.length+'</span></div>'+cards+'</div>';
+  }).join('');
+  return '<div class="topbar"><div><h1>CRM</h1><div class="sub">Clique no lead pra ver detalhes, montar o contrato e gerar cobrança.</div></div></div>'+
+    '<div class="bar"><input id="crm-busca" placeholder="Buscar por nome, nicho ou endereço" value="'+esc(window._busca||'')+'" style="min-width:250px">'+
+    '<button class="btn btn-o btn-s" id="exp-csv">Exportar CSV</button>'+
+    '<label class="btn btn-o btn-s" style="cursor:pointer">Importar CSV<input type="file" id="imp-csv" accept=".csv" class="hide"></label></div>'+
+    '<div class="kb">'+cols+'</div>';
+}
+
+/* ---------- fila ---------- */
+function viewFila(){
+  var disp=S.leads.filter(function(l){return l.status==='novo'&&l.telefone;}).sort(function(a,b){return (b.score||0)-(a.score||0);});
+  var rest=Math.max(0,CONFIG.limiteDiario-S.hoje.n);
+  var opts=S.templates.map(function(t){return '<option value="'+t.id+'"'+(t.id===FILA.tplId?' selected':'')+'>'+esc(t.nome)+'</option>';}).join('');
+  if(!FILA.itens.length){
+    return '<div class="topbar"><div><h1>Disparo</h1><div class="sub">Você aprova e envia a abertura. Da resposta em diante, quem conduz é a IA.</div></div></div>'+
+      '<div class="warn"><b>Por que não é automático.</b> Disparo em massa de conversa nova derruba número. Como o '+telBonito(CONFIG.meuWhatsApp)+' é o mesmo que atende seus clientes pagantes, perder ele custa mais caro que o tempo economizado. Restam <b>'+rest+'</b> abordagens no limite de hoje.</div>'+
+      '<div class="card"><div class="row r2">'+
+      '<div><label class="f">Mensagem de abertura</label><select id="f-tpl">'+opts+'</select></div>'+
+      '<div><label class="f">Quantos leads nesta rodada</label><input type="number" id="f-qtd" value="'+Math.min(10,rest,disp.length)+'" min="1" max="'+Math.max(1,Math.min(rest,disp.length))+'"></div></div>'+
+      '<p>'+disp.length+' leads prontos, ordenados por score.</p>'+
+      '<button class="btn btn-a" id="f-iniciar"'+(disp.length&&rest?'':' disabled')+'>Iniciar fila</button>'+
+      (rest?'':'<p class="note" style="color:var(--amber)">Limite diário atingido. Continue amanhã.</p>')+'</div>';
+  }
+  var l=FILA.itens[FILA.i];
+  if(!l){FILA.itens=[];return '<div class="card"><h3>Fila concluída</h3><p>Todos os leads da rodada foram processados.</p><button class="btn btn-a" data-go="crm">Ver CRM</button></div>';}
+  var tpl=S.templates.find(function(t){return t.id===FILA.tplId;})||S.templates[0];
+  return '<div class="topbar"><div><h1>Disparo</h1><div class="sub">Ajustar uma frase por lead sobe muito a taxa de resposta.</div></div>'+
+    '<button class="btn btn-o btn-s" id="f-parar">Encerrar fila</button></div>'+
+    '<div class="queue"><div class="qnum">Lead '+(FILA.i+1)+' de '+FILA.itens.length+' &nbsp;·&nbsp; hoje: '+S.hoje.n+'/'+CONFIG.limiteDiario+'</div>'+
+    '<h3 style="font-size:1.15rem;margin-bottom:2px">'+esc(l.nome)+'</h3>'+
+    '<p style="font-size:12.5px;margin-bottom:12px">'+esc(l.endereco||'')+' · <span class="mono">'+esc(telBonito(l.telefone))+'</span></p>'+
+    '<div>'+(l.sinais||[]).map(function(s){return '<span class="tag w">'+esc(s)+'</span>';}).join('')+'</div>'+
+    '<label class="f" style="margin-top:14px">Mensagem</label>'+
+    '<textarea id="f-msg" style="min-height:185px">'+esc(montarMensagem(tpl.texto,l))+'</textarea>'+
+    '<div class="qactions" style="margin-top:14px">'+
+      '<button class="btn btn-a" id="f-enviar">Abrir WhatsApp e marcar como abordado</button>'+
+      '<button class="btn btn-o" id="f-copiar">Copiar</button>'+
+      '<button class="btn btn-o" id="f-pular">Pular</button>'+
+      '<button class="btn btn-d" id="f-descartar">Descartar</button></div>'+
+    '<p class="note">Espere uns '+CONFIG.intervaloSegundos+' segundos entre um envio e outro.</p></div>';
+}
+
+/* ---------- agente ---------- */
+function viewAgente(){
+  var a=S.agente;
+  var faq=a.faq.map(function(f,i){
+    return '<div class="card" style="padding:14px;margin-bottom:10px;background:var(--panel2)">'+
+      '<input class="faq-p" data-i="'+i+'" value="'+esc(f.p)+'" placeholder="Pergunta ou objeção" style="font-weight:600;margin-bottom:8px">'+
+      '<textarea class="faq-r" data-i="'+i+'" style="min-height:64px" placeholder="Como a IA responde">'+esc(f.r)+'</textarea>'+
+      '<button class="btn btn-d btn-s" data-del-faq="'+i+'" style="margin-top:8px">Remover</button></div>';
+  }).join('');
+
+  return '<div class="topbar"><div><h1>Agente IA</h1><div class="sub">O treino da '+esc(a.nome)+'. Ela usa isto + a tabela de preços em toda conversa.</div></div>'+
+    '<button class="btn btn-a" id="ag-salvar">Salvar treino</button></div>'+
+
+    (CONFIG.gateway?'':'<div class="warn"><b>Sem gateway.</b> O treino já pode ser escrito e salvo, mas a IA só responde de verdade depois que você subir o gateway e preencher o campo <span class="mono">gateway</span> no CONFIG. O teste abaixo roda em modo roteiro, sem IA.</div>')+
+
+    '<div class="row r2">'+
+      '<div>'+
+        '<div class="card"><h3>Identidade</h3>'+
+        '<div class="row r2"><div><label class="f">Nome do agente</label><input id="ag-nome" value="'+esc(a.nome)+'"></div>'+
+        '<div><label class="f">Tom de voz</label><input id="ag-tom" value="'+esc(a.tom)+'"></div></div>'+
+        '<label class="f">Instruções (é isto que a IA lê antes de cada resposta)</label>'+
+        '<textarea id="ag-inst" style="min-height:420px;font-family:\'IBM Plex Mono\',monospace;font-size:12.5px">'+esc(a.instrucoes)+'</textarea>'+
+        '<p class="note">A tabela de preços é injetada automaticamente. Não repita valores aqui — se repetir e depois mudar o preço, a IA fala o valor errado.</p></div>'+
+
+        '<div class="card"><h3>Quando chamar você</h3>'+
+        '<label class="f">Palavras que fazem a IA parar e te avisar (uma por linha)</label>'+
+        '<textarea id="ag-esc" style="min-height:120px">'+esc(a.escalar.join('\n'))+'</textarea></div>'+
+      '</div>'+
+
+      '<div>'+
+        '<div class="card"><h3>Testar conversa</h3>'+
+        '<div class="chat" id="chat"></div>'+
+        '<div class="bar" style="margin:12px 0 0"><input id="chat-in" placeholder="Escreva como se fosse o lead" style="flex:1;min-width:0">'+
+        '<button class="btn btn-a" id="chat-enviar">Enviar</button>'+
+        '<button class="btn btn-o btn-s" id="chat-limpar">Limpar</button></div></div>'+
+
+        '<div class="card"><h3>Respostas prontas / objeções</h3>'+
+        '<p class="note" style="margin-top:0">Estas entram como exemplo no treino. Quanto mais específicas, menos a IA improvisa.</p>'+
+        faq+
+        '<button class="btn btn-o btn-s" id="faq-novo">Adicionar objeção</button></div>'+
+      '</div>'+
+    '</div>';
+}
+function pintarChat(){
+  var c=document.getElementById('chat'); if(!c) return;
+  if(!CHAT.length){
+    c.innerHTML='<div class="msg sys">Escreva como se fosse um lead que acabou de responder sua abordagem.</div>';
+    return;
+  }
+  c.innerHTML=CHAT.map(function(m){return '<div class="msg '+m.de+'">'+esc(m.txt)+'</div>';}).join('');
+  c.scrollTop=c.scrollHeight;
+}
+async function enviarChat(){
+  var inp=document.getElementById('chat-in');
+  var txt=inp.value.trim(); if(!txt) return;
+  CHAT.push({de:'eu',txt:txt}); inp.value=''; pintarChat();
+  CHAT.push({de:'sys',txt:'digitando...'}); pintarChat();
+  var resposta;
+  if(CONFIG.gateway){
+    try{
+      var d=await api('/agente/testar',{historico:CHAT.filter(function(m){return m.de!=='sys';}).map(function(m){return {role:m.de==='eu'?'user':'assistant',content:m.txt};}),agente:S.agente,precos:S.precos});
+      resposta=d.resposta;
+    }catch(e){ resposta='[erro no gateway] '+e.message; }
+  } else {
+    resposta=respostaRoteiro(txt);
+  }
+  CHAT=CHAT.filter(function(m){return m.de!=='sys';});
+  CHAT.push({de:'ia',txt:resposta}); pintarChat();
+}
+/* fallback sem IA: casa com o FAQ, senao segue o roteiro de qualificacao */
+function respostaRoteiro(txt){
+  var t=txt.toLowerCase();
+  var hit=S.agente.faq.find(function(f){
+    return f.p.toLowerCase().split(/\s+/).filter(function(w){return w.length>4;}).some(function(w){return t.indexOf(w)>-1;});
+  });
+  if(hit) return hit.r;
+  if(/pre[çc]o|valor|quanto/.test(t)){
+    var ia=servico('ia');
+    return 'Só o atendimento de IA no WhatsApp fica em '+brl(ia.setup)+' de instalação e '+brl(ia.mensal)+' por mês. Mas depende do que sua loja precisa — me conta rapidinho o que você vende?';
+  }
+  var perguntas=['Legal! Me conta: que tipo de negócio é o seu?','E quem responde o WhatsApp de vocês hoje, em que horário?','Mais ou menos quantas mensagens chegam por dia?','Vocês já têm site ou ficha no Google?','O que mais te incomoda no atendimento hoje?'];
+  var n=CHAT.filter(function(m){return m.de==='ia';}).length;
+  return (perguntas[n]||'Perfeito. Posso te mostrar funcionando numa demonstração de 15 minutos? Prefere hoje à tarde ou amanhã de manhã?');
+}
+
+/* ---------- precos ---------- */
+function viewPrecos(){
+  var linhas=S.precos.servicos.map(function(s,i){
+    var margem=num(s.mensal)-num(s.custo);
+    var pct=num(s.mensal)?Math.round(margem/num(s.mensal)*100):0;
+    return '<tr>'+
+      '<td><input class="sv-nome" data-i="'+i+'" value="'+esc(s.nome)+'" style="min-width:180px"></td>'+
+      '<td><input class="sv-setup" data-i="'+i+'" value="'+s.setup+'" style="width:92px;text-align:right"></td>'+
+      '<td><input class="sv-mensal" data-i="'+i+'" value="'+s.mensal+'" style="width:92px;text-align:right"></td>'+
+      '<td><input class="sv-custo" data-i="'+i+'" value="'+s.custo+'" style="width:82px;text-align:right"></td>'+
+      '<td class="num" style="color:'+(margem>0?'var(--green)':'var(--red)')+'">'+brl(margem)+'<div class="sm">'+pct+'%</div></td>'+
+      '<td><button class="btn btn-d btn-s" data-del-sv="'+i+'">×</button></td></tr>';
+  }).join('');
+
+  var pacotes=S.precos.pacotes.map(function(p,i){
+    var c=calcularContrato(p.servicos);
+    var checks=S.precos.servicos.map(function(s){
+      return '<label style="display:inline-flex;gap:5px;align-items:center;margin:0 10px 6px 0;font-size:12.5px">'+
+        '<input type="checkbox" class="pk-sv" data-i="'+i+'" data-id="'+s.id+'"'+(p.servicos.indexOf(s.id)>-1?' checked':'')+'> '+esc(s.nome.split('(')[0].trim())+'</label>';
+    }).join('');
+    return '<div class="card" style="background:var(--panel2);padding:16px;margin-bottom:12px">'+
+      '<div class="bar" style="margin-bottom:10px">'+
+      '<input class="pk-nome" data-i="'+i+'" value="'+esc(p.nome)+'" style="font-weight:600;max-width:190px">'+
+      '<label class="f" style="margin:0">Desconto %</label>'+
+      '<input class="pk-desc" data-i="'+i+'" value="'+p.desconto+'" style="width:70px;text-align:right">'+
+      '<button class="btn btn-d btn-s" data-del-pk="'+i+'" style="margin-left:auto">Remover</button></div>'+
+      '<div>'+checks+'</div>'+
+      '<div class="bar" style="margin:10px 0 0;gap:18px;font-size:13px">'+
+      '<span>Entrada <b class="mono" style="color:var(--amber)">'+brl(c.setup)+'</b> <span class="sm" style="text-decoration:line-through">'+brl(c.setupCheio)+'</span></span>'+
+      '<span>Mensal <b class="mono" style="color:var(--green)">'+brl(c.mensal)+'</b> <span class="sm" style="text-decoration:line-through">'+brl(c.mensalCheio)+'</span></span>'+
+      '<span class="sm">margem '+brl(c.margem)+'/mês</span></div></div>';
+  }).join('');
+
+  var r=S.precos.regras;
+  return '<div class="topbar"><div><h1>Preços</h1><div class="sub">A IA lê esta tabela em toda conversa. Muda aqui, muda lá na hora.</div></div>'+
+    '<button class="btn btn-a" id="pr-salvar">Salvar tabela</button></div>'+
+
+    '<div class="card"><h3>Serviços</h3>'+
+    '<div class="scroll"><table class="tbl"><thead><tr><th>Serviço</th><th style="text-align:right">Instalação</th><th style="text-align:right">Mensal</th><th style="text-align:right">Meu custo</th><th style="text-align:right">Margem/mês</th><th></th></tr></thead>'+
+    '<tbody>'+linhas+'</tbody></table></div>'+
+    '<button class="btn btn-o btn-s" id="sv-novo" style="margin-top:12px">Adicionar serviço</button>'+
+    '<p class="note">Meu custo = token da IA, hospedagem e ferramenta, por cliente por mês. É o que diz se a mensalidade fecha ou não.</p></div>'+
+
+    '<div class="warn"><b>Sobre mensalidade baixa.</b> R$9,90 e R$14,90 funcionam para serviço passivo — hospedagem de site, ficha do Google, link de pagamento — onde seu custo é quase zero e a recorrência é lucro limpo. Já o atendimento de IA consome token a cada conversa: uma loja movimentada gasta entre R$8 e R$15 por mês só de API. Mensalidade de R$9,90 nesse serviço te deixa no prejuízo em cliente que usa muito. Por isso a IA está em R$59,90 e os passivos nas faixas baixas — assim você tem o recorrente diário que quer, sem trabalhar de graça.</div>'+
+
+    '<div class="card"><h3>Pacotes e descontos</h3>'+pacotes+
+    '<button class="btn btn-o btn-s" id="pk-novo">Adicionar pacote</button></div>'+
+
+    '<div class="card"><h3>Regras de negociação</h3><div class="row r3">'+
+    '<div><label class="f">Desconto máximo que a IA pode dar (%)</label><input id="rg-desc" value="'+r.descontoMaxAgente+'"></div>'+
+    '<div><label class="f">Parcelas da instalação</label><input id="rg-parc" value="'+r.parcelasSetup+'"></div>'+
+    '<div><label class="f">Dias de teste grátis</label><input id="rg-teste" value="'+r.diasTeste+'"></div></div>'+
+    '<p class="note">Acima do desconto máximo, a IA para e te chama. Ela nunca negocia sozinha além desse limite.</p></div>';
+}
+
+/* ---------- templates ---------- */
+function viewTpl(){
+  var lista=S.templates.map(function(t){
+    return '<div class="card"><div class="bar" style="margin-bottom:10px">'+
+      '<input class="tpl-nome" data-id="'+t.id+'" value="'+esc(t.nome)+'" style="flex:1;min-width:200px;font-weight:600">'+
+      '<button class="btn btn-d btn-s" data-del-tpl="'+t.id+'">Excluir</button></div>'+
+      '<textarea class="tpl-txt" data-id="'+t.id+'">'+esc(t.texto)+'</textarea></div>';
+  }).join('');
+  return '<div class="topbar"><div><h1>Mensagens</h1><div class="sub">Só a abertura da conversa fria. Depois da resposta, quem escreve é o agente.</div></div>'+
+    '<button class="btn btn-a" id="tpl-novo">Nova mensagem</button></div>'+
+    '<div class="card"><h3>Variáveis</h3><p style="margin:0">'+
+    ['{saudacao}','{nome}','{categoria}','{bairro}','{meuNome}','{minhaEmpresa}','{meuLink}','{pacote}','{linkPagamento}'].map(function(v){return '<span class="tag">'+v+'</span>';}).join('')+
+    '</p><p class="note">Mensagem fria converte melhor curta, com uma pergunta só e saída fácil. Manter a saída não é só educação: é o que evita denúncia de spam e é exigência da LGPD.</p></div>'+
+    lista+'<button class="btn btn-a" id="tpl-salvar">Salvar alterações</button>';
+}
+
+/* ---------- ajustes ---------- */
+function viewCfg(){
+  var qr = WA.conectado
+    ? '<div class="qrimg" style="background:#14301f"><div class="ph" style="color:#6fd39b;font-weight:600">Conectado<br><span class="mono" style="font-size:13px">'+esc(telBonito(WA.numero||CONFIG.meuWhatsApp))+'</span></div></div>'
+    : '<div class="qrimg" id="qr-slot"><div class="ph">'+(CONFIG.gateway?'Clique em Gerar QR Code':'Configure o gateway primeiro')+'</div></div>';
+
+  return '<div class="topbar"><div><h1>Ajustes</h1><div class="sub">Conexão do WhatsApp, pagamentos e backup dos dados.</div></div></div>'+
+
+    '<div class="card"><h3>Conectar o WhatsApp '+esc(telBonito(CONFIG.meuWhatsApp))+'</h3>'+
+    '<div class="qrbox"><div>'+qr+'</div><div style="flex:1;min-width:250px">'+
+    '<ol class="steps">'+
+      '<li>Suba o gateway (pasta <span class="mono">gateway/</span>) no Railway ou Render e cole a URL no campo <span class="mono">gateway</span> do CONFIG</li>'+
+      '<li>Clique em Gerar QR Code aqui</li>'+
+      '<li>No celular: WhatsApp &gt; Configurações &gt; Aparelhos conectados &gt; Conectar aparelho</li>'+
+      '<li>Aponte a câmera pro código. O QR expira em ~40 segundos — se sumir, gere de novo</li>'+
+      '<li>A partir daí a '+esc(S.agente.nome)+' responde sozinha quem te mandar mensagem</li>'+
+    '</ol>'+
+    '<div class="bar" style="margin:14px 0 0">'+
+      '<button class="btn btn-a" id="wa-qr"'+(CONFIG.gateway?'':' disabled')+'>Gerar QR Code</button>'+
+      '<button class="btn btn-o btn-s" id="wa-status">Verificar conexão</button>'+
+      (WA.conectado?'<button class="btn btn-d btn-s" id="wa-sair">Desconectar</button>':'')+
+    '</div></div></div>'+
+    '<div class="warn danger" style="margin:16px 0 0"><b>Leia antes de conectar.</b> Conectar por QR usa o protocolo do WhatsApp Web por fora da API oficial, o que contraria os Termos de Uso do WhatsApp. Respondendo quem te procura o risco é baixo. Disparando conversa nova em volume, o número cai — e esse é o mesmo número que atende seus clientes pagantes. Por isso o Disparo continua sendo clique-a-clique.</div></div>'+
+
+    '<div class="row r2">'+
+      '<div class="card"><h3>Pagamentos — Mercado Pago</h3>'+
+      '<dl class="kv"><dt>Public Key</dt><dd class="mono" style="font-size:11.5px">'+esc(CONFIG.mpPublicKey||'não configurada')+'</dd>'+
+      '<dt>Access Token</dt><dd>'+(CONFIG.gateway?'<span style="color:var(--green)">no servidor</span>':'<span style="color:var(--amber)">pendente</span>')+'</dd>'+
+      '<dt>Ambiente</dt><dd>'+(String(CONFIG.mpPublicKey||'').indexOf('TEST')===0?'teste':'produção')+'</dd></dl>'+
+      '<p class="note">O Access Token nunca entra neste arquivo — ele cria cobrança e estorna na sua conta. Fica só na variável <span class="mono">MP_ACCESS_TOKEN</span> do gateway.</p></div>'+
+
+      '<div class="card"><h3>Dados</h3>'+
+      '<p>'+S.leads.length+' leads e '+S.leads.filter(function(l){return l.status==='cliente';}).length+' contratos neste navegador.</p>'+
+      '<div class="bar"><button class="btn btn-o btn-s" id="cfg-exp">Backup JSON</button>'+
+      '<button class="btn btn-o btn-s" id="cfg-csv">Exportar CSV</button>'+
+      '<button class="btn btn-d btn-s" id="cfg-zerar">Apagar leads</button></div>'+
+      '<p class="note">Exporte toda semana. Limpar o navegador apaga tudo. Pra acessar de vários aparelhos, rode o schema.sql no Supabase.</p></div>'+
+    '</div>'+
+
+    '<div class="card"><h3>Aquecimento do número</h3>'+
+    '<div class="scroll"><table class="tbl"><thead><tr><th>Período</th><th>Conversas novas por dia</th><th>O que fazer junto</th></tr></thead><tbody>'+
+    '<tr><td>Semana 1</td><td class="mono">10 a 15</td><td>Conversar também com contatos conhecidos</td></tr>'+
+    '<tr><td>Semana 2</td><td class="mono">20 a 30</td><td>Foto de perfil, catálogo e descrição preenchidos</td></tr>'+
+    '<tr><td>Semana 3</td><td class="mono">40 a 50</td><td>Espaçar os envios ao longo do dia</td></tr>'+
+    '<tr><td>Depois</td><td class="mono">60 a 80</td><td>Só aumente se a taxa de bloqueio estiver baixa</td></tr>'+
+    '</tbody></table></div></div>';
+}
+
+/* ---------- drawer ---------- */
+function abrirLead(id){
+  var l=S.leads.find(function(x){return x.id===id;}); if(!l) return;
+  leadAberto=id;
+  var etapa=ETAPAS.map(function(e){return '<option value="'+e.id+'"'+(l.status===e.id?' selected':'')+'>'+e.nome+'</option>';}).join('');
+  var tplo=S.templates.map(function(t){return '<option value="'+t.id+'">'+esc(t.nome)+'</option>';}).join('');
+  var hist=(l.historico||[]).map(function(h){return '<div><time>'+dataBR(h.em)+'</time>'+esc(h.texto)+'</div>';}).join('')||'<div class="empty">Sem histórico.</div>';
+
+  var sel=(l.contrato&&l.contrato.servicos)||[];
+  var c=calcularContrato(sel);
+  var svChecks=S.precos.servicos.filter(function(s){return s.ativo!==false;}).map(function(s){
+    return '<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px">'+
+      '<input type="checkbox" class="ct-sv" data-id="'+s.id+'"'+(sel.indexOf(s.id)>-1?' checked':'')+' style="margin-top:3px">'+
+      '<span style="flex:1"><b>'+esc(s.nome)+'</b><br><span class="sm">'+brl(s.setup)+' + '+brl(s.mensal)+'/mês</span></span></label>';
+  }).join('');
+
+  var abaDados=
+    '<dl class="kv">'+
+      '<dt>Segmento</dt><dd>'+esc(l.categoria||'—')+'</dd>'+
+      '<dt>Endereço</dt><dd>'+esc(l.endereco||'—')+'</dd>'+
+      '<dt>Telefone</dt><dd class="mono">'+esc(telBonito(l.telefone))+'</dd>'+
+      '<dt>Site</dt><dd>'+(l.site?'<a href="'+esc(l.site)+'" target="_blank" rel="noopener">'+esc(l.site)+'</a>':'não tem')+'</dd>'+
+      '<dt>Google</dt><dd>'+(l.rating?l.rating+' · '+(l.reviews||0)+' avaliações':'—')+'</dd>'+
+      '<dt>Origem</dt><dd>'+esc(l.origem||'—')+'</dd>'+
+      '<dt>Último contato</dt><dd>'+dataBR(l.ultimoContato)+'</dd></dl>'+
+    '<label class="f">Por que é oportunidade</label><div style="margin-bottom:16px">'+
+      ((l.sinais||[]).map(function(s){return '<span class="tag w">'+esc(s)+'</span>';}).join('')||'<span class="tag">sem sinal forte</span>')+'</div>'+
+    '<label class="f">Etapa</label><select id="d-etapa" style="margin-bottom:16px">'+etapa+'</select>'+
+    '<label class="f">Enviar mensagem</label><select id="d-tpl" style="margin-bottom:8px">'+tplo+'</select>'+
+    '<button class="btn btn-g btn-s" id="d-whats" style="width:100%;margin-bottom:18px">Abrir conversa no WhatsApp</button>'+
+    '<label class="f">Anotações</label><textarea id="d-notas">'+esc(l.notas||'')+'</textarea>'+
+    '<button class="btn btn-o btn-s" id="d-nota-salvar" style="margin:8px 0 18px">Salvar anotação</button>'+
+    '<label class="f">Histórico</label><div class="hist">'+hist+'</div>';
+
+  var abaContrato=
+    '<label class="f">Serviços contratados</label><div style="margin-bottom:14px">'+svChecks+'</div>'+
+    '<div class="card" style="background:var(--panel2);padding:14px;margin-bottom:14px">'+
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Pacote</span><b>'+esc(c.pacote)+(c.desconto?' ('+c.desconto+'% off)':'')+'</b></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Instalação</span><b class="mono" style="color:var(--amber)">'+brl(c.setup)+'</b></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Mensalidade</span><b class="mono" style="color:var(--green)">'+brl(c.mensal)+'</b></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--dim)"><span>Margem estimada</span><span class="mono">'+brl(c.margem)+'/mês</span></div>'+
+      (c.setup?'<div class="sm" style="margin-top:8px">ou '+S.precos.regras.parcelasSetup+'x de '+brl(c.setup/S.precos.regras.parcelasSetup)+'</div>':'')+
+    '</div>'+
+    '<div class="row r2" style="margin-bottom:14px">'+
+      '<div><label class="f">Dia do vencimento</label><input id="ct-dia" type="number" min="1" max="28" value="'+((l.contrato&&l.contrato.diaVencimento)||10)+'"></div>'+
+      '<div><label class="f">Status do pagamento</label><select id="ct-status">'+
+        ['pendente','pago','atrasado','cancelado'].map(function(x){
+          return '<option'+((l.contrato&&l.contrato.statusPagamento)===x?' selected':'')+'>'+x+'</option>';}).join('')+
+      '</select></div></div>'+
+    '<button class="btn btn-a btn-s" id="ct-salvar" style="width:100%;margin-bottom:8px">Salvar contrato</button>'+
+    '<button class="btn btn-g btn-s" id="ct-link" style="width:100%;margin-bottom:8px">Gerar link de pagamento</button>'+
+    (l.contrato&&l.contrato.linkPagamento?'<div class="card" style="padding:10px;background:var(--panel2);margin-bottom:8px"><div class="sm mono" style="word-break:break-all">'+esc(l.contrato.linkPagamento)+'</div>'+
+      '<button class="btn btn-o btn-s" id="ct-enviar" style="margin-top:8px;width:100%">Enviar link no WhatsApp</button></div>':'')+
+    '<p class="note">O link vem do Mercado Pago pelo gateway, com a cobrança de instalação e a assinatura mensal já montadas.</p>';
+
+  document.getElementById('drawer-inner').innerHTML=
+    '<div class="dh"><div><h2 style="font-size:1.12rem;margin-bottom:5px">'+esc(l.nome)+'</h2>'+
+    '<span class="pill p-'+l.status+'">'+(ETAPAS.find(function(e){return e.id===l.status;})||{}).nome+'</span> '+
+    '<span class="score '+classeScore(l.score)+'" style="margin-left:5px"><span class="sdot"></span>'+(l.score||0)+'</span></div>'+
+    '<button class="x" data-close>&times;</button></div>'+
+    '<div class="db"><div class="tabs">'+
+      '<button class="tab'+(abaDrawer==='dados'?' on':'')+'" data-aba="dados">Dados</button>'+
+      '<button class="tab'+(abaDrawer==='contrato'?' on':'')+'" data-aba="contrato">Contrato</button></div>'+
+      (abaDrawer==='dados'?abaDados:abaContrato)+'</div>'+
+    '<div class="df"><button class="btn btn-g btn-s" id="d-ganhou">Virou cliente</button>'+
+    '<button class="btn btn-o btn-s" id="d-reuniao">Marcou reunião</button>'+
+    '<button class="btn btn-d btn-s" id="d-perdido">Perdido</button>'+
+    '<button class="btn btn-d btn-s" id="d-excluir" style="margin-left:auto">Excluir</button></div>';
+  document.getElementById('drawer').classList.add('on');
+}
+function fecharDrawer(){document.getElementById('drawer').classList.remove('on');leadAberto=null;abaDrawer='dados';}
+function mover(id,etapa){
+  var l=S.leads.find(function(x){return x.id===id;}); if(!l||l.status===etapa) return;
+  l.status=etapa;
+  registrar(id,'Movido para '+(ETAPAS.find(function(e){return e.id===etapa;})||{}).nome);
+  salvar(); render();
+}
+
+/* ---------- csv ---------- */
+function exportarCSV(){
+  var cols=['nome','categoria','endereco','telefone','site','rating','reviews','score','status','origem','ultimoContato','notas'];
+  var lin=[cols.concat(['pacote','setup','mensal','vencimento','pagamento']).join(';')];
+  S.leads.forEach(function(l){
+    var base=cols.map(function(c){return '"'+String(l[c]==null?'':l[c]).replace(/"/g,'""').replace(/\r?\n/g,' ')+'"';});
+    var ct=l.contrato||{};
+    base=base.concat([ct.pacote||'',ct.setup||'',ct.mensal||'',ct.diaVencimento||'',ct.statusPagamento||''].map(function(v){return '"'+v+'"';}));
+    lin.push(base.join(';'));
+  });
+  baixar(lin.join('\n'),'conectado-leads-'+hojeStr()+'.csv','text/csv;charset=utf-8;');
+}
+function baixar(txt,nome,tipo){
+  var b=new Blob(['\ufeff'+txt],{type:tipo}); var a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=nome; document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},200);
+}
+function importarCSV(txt){
+  var lin=txt.split(/\r?\n/).filter(function(x){return x.trim();});
+  if(lin.length<2){toast('CSV vazio');return;}
+  var sep=lin[0].indexOf(';')>-1?';':',';
+  var cab=lin[0].split(sep).map(function(c){return c.replace(/^"|"$/g,'').trim().toLowerCase();});
+  var n=0;
+  lin.slice(1).forEach(function(ln){
+    var v=ln.split(sep).map(function(c){return c.replace(/^"|"$/g,'').trim();});
+    var o={}; cab.forEach(function(c,i){o[c]=v[i]||'';});
+    if(!o.nome&&!o.telefone) return;
+    var l={id:uid(),nome:o.nome||'Sem nome',categoria:o.categoria||'',endereco:o.endereco||'',telefone:o.telefone||'',
+      site:o.site||'',rating:parseFloat(o.rating)||null,reviews:parseInt(o.reviews,10)||null,semChat:true,
+      status:o.status||'novo',origem:o.origem||'Importado',notas:o.notas||'',criadoEm:new Date().toISOString(),historico:[]};
+    calcularScore(l); S.leads.push(l); n++;
+  });
+  salvar(); render(); toast(n+' leads importados');
+}
+
+/* ==========================================================================
+   EVENTOS
+   ========================================================================== */
+document.getElementById('nav').addEventListener('click',function(e){
+  var b=e.target.closest('.navbtn'); if(b){VIEW=b.getAttribute('data-v');render();}
+});
+
+document.getElementById('drawer').addEventListener('click',async function(e){
+  if(e.target.closest('[data-close]')){fecharDrawer();return;}
+  var ab=e.target.closest('[data-aba]');
+  if(ab){abaDrawer=ab.getAttribute('data-aba');abrirLead(leadAberto);return;}
+  var l=S.leads.find(function(x){return x.id===leadAberto;}); if(!l) return;
+  var t=e.target;
+
+  if(t.id==='d-whats'){
+    var tid=document.getElementById('d-tpl').value;
+    var tp=S.templates.find(function(x){return x.id===tid;});
+    if(abrirWhats(l.telefone,montarMensagem(tp.texto,l))){
+      l.ultimoContato=new Date().toISOString();
+      if(l.status==='novo'){l.status='abordado';S.hoje.n++;}
+      registrar(l.id,'Mensagem enviada: '+tp.nome);
+      salvar(); render(); abrirLead(l.id);
+    }
+  }
+  else if(t.id==='d-nota-salvar'){
+    l.notas=document.getElementById('d-notas').value;
+    registrar(l.id,'Anotação atualizada'); salvar(); toast('Anotação salva');
+  }
+  else if(t.id==='ct-salvar'){
+    var ids=Array.prototype.map.call(document.querySelectorAll('.ct-sv:checked'),function(c){return c.getAttribute('data-id');});
+    var c=calcularContrato(ids);
+    c.diaVencimento=parseInt(document.getElementById('ct-dia').value,10)||10;
+    c.statusPagamento=document.getElementById('ct-status').value;
+    c.inicio=(l.contrato&&l.contrato.inicio)||new Date().toISOString();
+    c.linkPagamento=(l.contrato&&l.contrato.linkPagamento)||'';
+    l.contrato=c;
+    registrar(l.id,'Contrato salvo: '+c.pacote+' — '+brl(c.mensal)+'/mês');
+    salvar(); toast('Contrato salvo'); render(); abrirLead(l.id);
+  }
+  else if(t.id==='ct-link'){
+    if(!l.contrato){toast('Salve o contrato primeiro');return;}
+    t.disabled=true; t.textContent='Gerando...';
+    try{
+      var d=await api('/pagamento/criar',{lead:{id:l.id,nome:l.nome,telefone:normTel(l.telefone)},contrato:l.contrato});
+      l.contrato.linkPagamento=d.link;
+      registrar(l.id,'Link de pagamento gerado');
+      salvar(); toast('Link criado'); abrirLead(l.id);
+    }catch(err){ toast('Falhou: '+err.message); t.disabled=false; t.textContent='Gerar link de pagamento'; }
+  }
+  else if(t.id==='ct-enviar'){
+    var tp7=S.templates.find(function(x){return x.id==='t7';})||S.templates[0];
+    abrirWhats(l.telefone,montarMensagem(tp7.texto,l));
+    registrar(l.id,'Link de pagamento enviado'); salvar();
+  }
+  else if(t.id==='d-ganhou'){mover(l.id,'cliente');fecharDrawer();toast('Cliente fechado');}
+  else if(t.id==='d-reuniao'){mover(l.id,'reuniao');fecharDrawer();}
+  else if(t.id==='d-perdido'){mover(l.id,'perdido');fecharDrawer();}
+  else if(t.id==='d-excluir'){
+    if(confirm('Excluir '+l.nome+'?')){S.leads=S.leads.filter(function(x){return x.id!==l.id;});salvar();fecharDrawer();render();}
+  }
+});
+document.getElementById('drawer').addEventListener('change',function(e){
+  if(e.target.id==='d-etapa'&&leadAberto){mover(leadAberto,e.target.value);abrirLead(leadAberto);}
+  if(e.target.classList.contains('ct-sv')&&leadAberto){
+    var ids=Array.prototype.map.call(document.querySelectorAll('.ct-sv:checked'),function(c){return c.getAttribute('data-id');});
+    var l2=S.leads.find(function(x){return x.id===leadAberto;});
+    var prev=l2.contrato||{};
+    var c2=calcularContrato(ids);
+    c2.diaVencimento=prev.diaVencimento; c2.statusPagamento=prev.statusPagamento;
+    c2.inicio=prev.inicio; c2.linkPagamento=prev.linkPagamento;
+    l2.contrato=c2; abrirLead(leadAberto);
+  }
+});
+
+document.getElementById('view').addEventListener('click',async function(e){
+  var t=e.target;
+  var go=t.closest('[data-go]'); if(go){VIEW=go.getAttribute('data-go');render();return;}
+  var ab=t.closest('[data-abrir]'); if(ab){abaDrawer='dados';abrirLead(ab.getAttribute('data-abrir'));return;}
+
+  /* prospeccao */
+  if(t.id==='p-buscar'){buscarLojas();return;}
+  if(t.id==='sel-todas'){
+    var cbs=document.querySelectorAll('.sel');
+    var todos=Array.prototype.every.call(cbs,function(c){return c.checked;});
+    cbs.forEach(function(c){c.checked=!todos;});return;
+  }
+  if(t.id==='add-crm'){
+    var sel=document.querySelectorAll('.sel:checked');
+    if(!sel.length){toast('Selecione ao menos uma loja');return;}
+    sel.forEach(function(c){var l=window._achados[parseInt(c.getAttribute('data-i'),10)];if(l)S.leads.push(l);});
+    salvar(); toast(sel.length+' leads adicionados'); VIEW='crm'; render(); return;
+  }
+
+  if(t.id==='exp-csv'||t.id==='cfg-csv'){exportarCSV();return;}
+
+  /* fila */
+  if(t.id==='f-iniciar'){
+    var q=parseInt(document.getElementById('f-qtd').value,10)||5;
+    FILA.tplId=document.getElementById('f-tpl').value;
+    FILA.itens=S.leads.filter(function(l){return l.status==='novo'&&l.telefone;}).sort(function(a,b){return (b.score||0)-(a.score||0);}).slice(0,q);
+    FILA.i=0; render(); return;
+  }
+  if(t.id==='f-parar'){FILA.itens=[];render();return;}
+  if(t.id==='f-enviar'){
+    var lf=FILA.itens[FILA.i];
+    if(abrirWhats(lf.telefone,document.getElementById('f-msg').value)){
+      var real=S.leads.find(function(x){return x.id===lf.id;});
+      if(real){real.status='abordado';real.ultimoContato=new Date().toISOString();registrar(real.id,'Abordagem enviada pela fila');}
+      S.hoje.n++; FILA.i++; salvar(); render();
+    } return;
+  }
+  if(t.id==='f-copiar'){var ta=document.getElementById('f-msg');ta.select();try{document.execCommand('copy');toast('Copiado');}catch(x){toast('Copie manualmente');}return;}
+  if(t.id==='f-pular'){FILA.i++;render();return;}
+  if(t.id==='f-descartar'){mover(FILA.itens[FILA.i].id,'perdido');FILA.i++;render();return;}
+
+  /* agente */
+  if(t.id==='ag-salvar'){
+    S.agente.nome=document.getElementById('ag-nome').value;
+    S.agente.tom=document.getElementById('ag-tom').value;
+    S.agente.instrucoes=document.getElementById('ag-inst').value;
+    S.agente.escalar=document.getElementById('ag-esc').value.split('\n').map(function(x){return x.trim();}).filter(Boolean);
+    document.querySelectorAll('.faq-p').forEach(function(inp){var i=+inp.getAttribute('data-i');if(S.agente.faq[i])S.agente.faq[i].p=inp.value;});
+    document.querySelectorAll('.faq-r').forEach(function(ta){var i=+ta.getAttribute('data-i');if(S.agente.faq[i])S.agente.faq[i].r=ta.value;});
+    salvar();
+    if(CONFIG.gateway){ api('/agente/treinar',{agente:S.agente,precos:S.precos}).then(function(){toast('Treino salvo e enviado ao gateway');}).catch(function(){toast('Salvo local. Gateway não respondeu.');}); }
+    else toast('Treino salvo');
+    render(); return;
+  }
+  if(t.id==='faq-novo'){S.agente.faq.push({p:'',r:''});salvar();render();return;}
+  var df=t.closest('[data-del-faq]');
+  if(df){S.agente.faq.splice(+df.getAttribute('data-del-faq'),1);salvar();render();return;}
+  if(t.id==='chat-enviar'){enviarChat();return;}
+  if(t.id==='chat-limpar'){CHAT=[];pintarChat();return;}
+
+  /* precos */
+  if(t.id==='pr-salvar'){
+    document.querySelectorAll('.sv-nome').forEach(function(i){S.precos.servicos[+i.getAttribute('data-i')].nome=i.value;});
+    document.querySelectorAll('.sv-setup').forEach(function(i){S.precos.servicos[+i.getAttribute('data-i')].setup=num(i.value);});
+    document.querySelectorAll('.sv-mensal').forEach(function(i){S.precos.servicos[+i.getAttribute('data-i')].mensal=num(i.value);});
+    document.querySelectorAll('.sv-custo').forEach(function(i){S.precos.servicos[+i.getAttribute('data-i')].custo=num(i.value);});
+    document.querySelectorAll('.pk-nome').forEach(function(i){S.precos.pacotes[+i.getAttribute('data-i')].nome=i.value;});
+    document.querySelectorAll('.pk-desc').forEach(function(i){S.precos.pacotes[+i.getAttribute('data-i')].desconto=num(i.value);});
+    S.precos.regras.descontoMaxAgente=num(document.getElementById('rg-desc').value);
+    S.precos.regras.parcelasSetup=parseInt(document.getElementById('rg-parc').value,10)||1;
+    S.precos.regras.diasTeste=parseInt(document.getElementById('rg-teste').value,10)||0;
+    salvar();
+    if(CONFIG.gateway){ api('/agente/treinar',{agente:S.agente,precos:S.precos}).catch(function(){}); }
+    toast('Tabela salva'); render(); return;
+  }
+  if(t.id==='sv-novo'){S.precos.servicos.push({id:'s'+Date.now().toString(36),nome:'Novo serviço',setup:0,mensal:0,custo:0,ativo:true,desc:''});salvar();render();return;}
+  var dsv=t.closest('[data-del-sv]');
+  if(dsv){S.precos.servicos.splice(+dsv.getAttribute('data-del-sv'),1);salvar();render();return;}
+  if(t.id==='pk-novo'){S.precos.pacotes.push({id:'p'+Date.now().toString(36),nome:'Novo pacote',servicos:[],desconto:10});salvar();render();return;}
+  var dpk=t.closest('[data-del-pk]');
+  if(dpk){S.precos.pacotes.splice(+dpk.getAttribute('data-del-pk'),1);salvar();render();return;}
+
+  /* templates */
+  if(t.id==='tpl-novo'){S.templates.push({id:'t'+Date.now().toString(36),nome:'Nova mensagem',texto:'{saudacao}! Aqui é o {meuNome}.\n\n'});salvar();render();return;}
+  var dt=t.closest('[data-del-tpl]');
+  if(dt){
+    if(S.templates.length<=1){toast('Precisa de ao menos uma mensagem');return;}
+    S.templates=S.templates.filter(function(x){return x.id!==dt.getAttribute('data-del-tpl');});salvar();render();return;
+  }
+  if(t.id==='tpl-salvar'){
+    document.querySelectorAll('.tpl-nome').forEach(function(i){var tt=S.templates.find(function(x){return x.id===i.getAttribute('data-id');});if(tt)tt.nome=i.value;});
+    document.querySelectorAll('.tpl-txt').forEach(function(a){var tt=S.templates.find(function(x){return x.id===a.getAttribute('data-id');});if(tt)tt.texto=a.value;});
+    salvar(); toast('Mensagens salvas'); render(); return;
+  }
+
+  /* whatsapp */
+  if(t.id==='wa-qr'){
+    var slot=document.getElementById('qr-slot');
+    slot.innerHTML='<div class="ph">Gerando...</div>';
+    try{
+      var d=await api('/whatsapp/qr',{});
+      if(d.conectado){WA.conectado=true;WA.numero=d.numero||'';render();toast('Já está conectado');return;}
+      slot.innerHTML='<img src="'+d.qr+'" alt="QR Code do WhatsApp">';
+      var t0=Date.now(); var iv=setInterval(async function(){
+        await checarWhats();
+        if(WA.conectado){clearInterval(iv);toast('WhatsApp conectado');render();}
+        else if(Date.now()-t0>60000){clearInterval(iv);slot.innerHTML='<div class="ph">QR expirou.<br>Gere de novo.</div>';}
+      },3000);
+    }catch(err){ slot.innerHTML='<div class="ph">'+esc(err.message)+'</div>'; }
+    return;
+  }
+  if(t.id==='wa-status'){ await checarWhats(); toast(WA.conectado?'Conectado':'Offline'); return; }
+  if(t.id==='wa-sair'){
+    if(!confirm('Desconectar o WhatsApp? A IA para de responder.')) return;
+    try{ await api('/whatsapp/sair',{}); WA.conectado=false; render(); toast('Desconectado'); }catch(err){ toast(err.message); }
+    return;
+  }
+
+  /* ajustes */
+  if(t.id==='cfg-exp'){baixar(JSON.stringify(S,null,2),'conectado-backup-'+hojeStr()+'.json','application/json');return;}
+  if(t.id==='cfg-zerar'){
+    if(confirm('Apagar TODOS os leads? Não tem volta. Exporte antes.')){S.leads=[];S.log=[];salvar();render();toast('CRM zerado');}
+    return;
+  }
+});
+
+document.getElementById('view').addEventListener('input',function(e){
+  if(e.target.id==='p-raio'){document.getElementById('p-raio-v').textContent=e.target.value+' km';}
+  if(e.target.id==='crm-busca'){
+    window._busca=e.target.value; var p=e.target.selectionStart; render();
+    var el=document.getElementById('crm-busca'); if(el){el.focus();el.setSelectionRange(p,p);}
+  }
+});
+document.getElementById('view').addEventListener('change',function(e){
+  if(e.target.id==='imp-csv'){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader(); r.onload=function(){importarCSV(r.result);}; r.readAsText(f,'UTF-8');
+  }
+  if(e.target.classList.contains('pk-sv')){
+    var i=+e.target.getAttribute('data-i'), id=e.target.getAttribute('data-id');
+    var p=S.precos.pacotes[i];
+    if(e.target.checked){ if(p.servicos.indexOf(id)===-1) p.servicos.push(id); }
+    else p.servicos=p.servicos.filter(function(x){return x!==id;});
+    salvar(); render();
+  }
+});
+document.getElementById('view').addEventListener('keydown',function(e){
+  if(e.target.id==='chat-in'&&e.key==='Enter'){e.preventDefault();enviarChat();}
+});
+
+/* ---------- start ---------- */
+carregar();
+render();
+checarWhats();
+setInterval(checarWhats,30000);
+</script>
+</body>
+</html>
