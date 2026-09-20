@@ -230,8 +230,10 @@ var CONFIG = {
   // Token que o admin manda pro gateway (defina o mesmo valor no .env do gateway)
   gatewayToken: "",
 
-  // Busca de lojas no Google. Vazio = modo demonstracao.
-  endpointProspeccao: "",
+  // Busca de lojas no Google, via Netlify Function deste mesmo site.
+  // So funciona de verdade depois que GOOGLE_MAPS_KEY estiver no painel do
+  // Netlify. Enquanto nao estiver, a busca cai sozinha em modo demonstracao.
+  endpointProspeccao: "/.netlify/functions/prospectar",
 
   // Mercado Pago - SO a Public Key vai aqui. Ela e publica por design.
   // O Access Token fica no .env do gateway e NUNCA neste arquivo.
@@ -613,8 +615,11 @@ async function buscarLojas(){
       var d=await r.json();
       achados=(d.lojas||[]).map(function(p){var l=Object.assign({id:uid(),status:'novo',origem:'Google Places',criadoEm:new Date().toISOString(),historico:[]},p);calcularScore(l);return l;});
     }catch(e){
-      box.innerHTML='<div class="card"><h3 style="color:var(--red)">A busca não funcionou</h3><p>'+esc(e.message)+'</p><p class="note">Confira se a função está publicada e se a chave do Google está no painel do Netlify.</p></div>';
-      return;
+      // Sem chave do Google configurada a busca real nao roda. Em vez de travar,
+      // cai no modo demonstracao e avisa o que falta.
+      await new Promise(function(r){setTimeout(r,300);});
+      achados=gerarDemo(nicho,local,max);
+      window._avisoDemo='Busca real indispon\u00edvel ('+e.message+'). Mostrando lojas de demonstra\u00e7\u00e3o. Para buscar de verdade, cadastre GOOGLE_MAPS_KEY no painel do Netlify.';
     }
   } else { await new Promise(function(r){setTimeout(r,500);}); achados=gerarDemo(nicho,local,max); }
   if(soTel) achados=achados.filter(function(l){return !!l.telefone;});
@@ -622,7 +627,9 @@ async function buscarLojas(){
   if(ign){var tels=S.leads.map(function(l){return normTel(l.telefone);});achados=achados.filter(function(l){return tels.indexOf(normTel(l.telefone))===-1;});}
   achados.sort(function(a,b){return b.score-a.score;});
   window._achados=achados;
-  if(!achados.length){box.innerHTML='<div class="card"><div class="empty">Nenhuma loja com esses filtros. Aumente o raio ou troque o nicho.</div></div>';return;}
+  var aviso=window._avisoDemo?'<div class="warn">'+esc(window._avisoDemo)+'</div>':'';
+  window._avisoDemo=null;
+  if(!achados.length){box.innerHTML=aviso+'<div class="card"><div class="empty">Nenhuma loja com esses filtros. Aumente o raio ou troque o nicho.</div></div>';return;}
   var linhas=achados.map(function(l,i){
     return '<tr><td><input type="checkbox" class="sel" data-i="'+i+'" checked></td>'+
       '<td><div class="nm">'+esc(l.nome)+'</div><div class="sm">'+esc(l.endereco||'')+'</div></td>'+
@@ -631,7 +638,7 @@ async function buscarLojas(){
       '<td class="mono sm">'+esc(telBonito(l.telefone))+'</td>'+
       '<td class="sm">'+(l.rating?l.rating+' ('+(l.reviews||0)+')':'—')+'</td></tr>';
   }).join('');
-  box.innerHTML='<div class="card"><div class="bar"><h3 style="margin:0;flex:1">'+achados.length+' lojas encontradas</h3>'+
+  box.innerHTML=aviso+'<div class="card"><div class="bar"><h3 style="margin:0;flex:1">'+achados.length+' lojas encontradas</h3>'+
     '<button class="btn btn-o btn-s" id="sel-todas">Marcar/desmarcar todas</button>'+
     '<button class="btn btn-a" id="add-crm">Adicionar ao CRM</button></div>'+
     '<div class="scroll"><table class="tbl"><thead><tr><th></th><th>Loja</th><th>Score</th><th>Por que é oportunidade</th><th>Telefone</th><th>Google</th></tr></thead><tbody>'+linhas+'</tbody></table></div></div>';
