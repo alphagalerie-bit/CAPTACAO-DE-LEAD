@@ -4,10 +4,10 @@ Sistema completo pra prospectar, atender com IA e cobrar. Quatro peças que conv
 
 | Peça | O que faz | Onde roda |
 |---|---|---|
-| `Conectado_Admin_v2.html` | Painel, prospecção, CRM, disparo, treino do agente, preços, contratos e MRR | Netlify (com senha) |
-| `gateway/` | Segura a sessão do WhatsApp, roda a IA nas mensagens recebidas, cria cobrança no Mercado Pago | Railway ou Render |
-| `backend/prospectar.js` | Busca lojas reais no Google Places | Netlify Functions |
-| `backend/schema.sql` | Banco do CRM, pra usar em vários aparelhos | Supabase |
+| `public/index.html` | Painel, prospecção, CRM, disparo, treino do agente, preços, contratos e MRR | Netlify (com senha) |
+| `gateway/server.js` | Segura a sessão do WhatsApp, roda a IA nas mensagens recebidas, cria cobrança no Mercado Pago | Railway ou Render |
+| `netlify/functions/prospectar.js` | Busca lojas reais no Google Places | Netlify Functions |
+| `db/schema.sql` | Banco do CRM, pra usar em vários aparelhos | Supabase |
 
 ---
 
@@ -23,11 +23,37 @@ A **Public Key** (`APP_USR-4fceeb1b-...`) pode ficar no HTML — ela é pública
 
 ---
 
-## 1. Rodar o admin agora
+## 1. Colocar o painel no ar (Netlify)
 
-Abra o `Conectado_Admin_v2.html`. Funciona sozinho, em modo demonstração: prospecção com lojas fictícias, CRM completo, tabela de preços editável, contratos e MRR. O teste do agente roda em modo roteiro, seguindo a sequência de qualificação sem consumir token.
+O projeto **captacao-alpha** já existe na sua conta Netlify:
+<https://app.netlify.com/projects/captacao-alpha>
 
-Serve pra você validar preço, funil e roteiro antes de gastar com API.
+Falta ligar ele neste repositório. São três cliques, e depois todo push publica sozinho:
+
+1. Abra o projeto → **Project configuration › Build & deploy › Link repository**
+2. Escolha o GitHub e o repositório `alphagalerie-bit/captacao-de-lead`
+3. Branch de produção: `main`. As configurações de build já vêm do `netlify.toml`
+   (publica a pasta `public`, funções em `netlify/functions`, sem comando de build).
+
+Clique em **Deploy** e o painel sobe em <https://captacao-alpha.netlify.app>.
+
+**Ponha senha antes de usar com lead de verdade.** O painel guarda nome, telefone e
+contrato de cliente. Em *Project configuration › Access & security › Visitor access*,
+ligue **Password protection**. O `robots.txt` e o `X-Robots-Tag` já bloqueiam buscador,
+mas isso não é senha.
+
+**Chave do Google.** Enquanto `GOOGLE_MAPS_KEY` não estiver em *Environment variables*,
+a busca cai sozinha em modo demonstração, com aviso na tela — o resto do painel (CRM,
+preços, contratos, MRR) funciona normal. Quando quiser buscar loja de verdade:
+*Site configuration › Environment variables › Add* → `GOOGLE_MAPS_KEY` com uma chave que
+tenha **Places API (New)** e **Geocoding API** habilitadas.
+
+### Rodar na sua máquina, sem publicar
+
+Abra o `public/index.html` direto no navegador. Funciona sozinho, em modo demonstração:
+prospecção com lojas fictícias, CRM completo, tabela de preços editável, contratos e MRR.
+O teste do agente roda em modo roteiro, seguindo a sequência de qualificação sem consumir
+token. Serve pra você validar preço, funil e roteiro antes de gastar com API.
 
 ---
 
@@ -37,13 +63,13 @@ O QR Code precisa de um processo Node vivo, com socket aberto. Função serverle
 
 **Railway** (mais simples):
 
-1. Suba a pasta `gateway/` num repositório no GitHub
+1. Aponte o Railway pra este repositório, com *Root Directory* = `gateway`
 2. railway.app → *New Project* → *Deploy from GitHub*
-3. Em *Variables*, cole o `.env.example` preenchido:
+3. Em *Variables*, cole o `gateway/.env.example` preenchido:
    - `CONECTADO_TOKEN` — invente uma senha longa e aleatória
    - `ANTHROPIC_API_KEY` — pegue em console.anthropic.com
    - `MP_ACCESS_TOKEN` — o **novo** que você acabou de renovar
-   - `ORIGEM_PERMITIDA` — a URL do admin
+   - `ORIGEM_PERMITIDA` — a URL do admin (ex: `https://captacao-alpha.netlify.app`)
 4. Em *Settings > Volumes*, monte um volume em `/app/sessao`. Sem isso a sessão se perde a cada deploy e você reescaneia o QR toda vez.
 5. Copie a URL pública que o Railway gerou
 

@@ -1,0 +1,26 @@
+# Conectado — publicacao do admin + funcao de prospeccao
+#
+# O admin e HTML estatico, servido de /public.
+# A funcao de prospeccao roda em /.netlify/functions/prospectar.
+# O gateway do WhatsApp NAO vai aqui: precisa de processo vivo (Railway/Render).
+
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = ""
+
+[functions]
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Painel com dados de lead nao deve ser indexado por buscador
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
